@@ -17,5 +17,5 @@ jobs:
         gcloud compute instances create ci-$GITHUB_RUN_ID --zone us-east1-b \
                 --min-cpu-platform "Intel Haswell" --machine-type=f1-micro \
                 --image nested-vm-image
-        gcloud ssh ci-$GITHUB_RUN_ID cat /proc/cpuinfo
+        gcloud compute ssh ci-$GITHUB_RUN_ID cat /proc/cpuinfo
         gcloud compute instances delete ci-$GITHUB_RUN_ID

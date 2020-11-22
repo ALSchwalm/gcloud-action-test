@@ -6,6 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
+    - uses: actions/checkout@v1
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@master
       with:
@@ -14,12 +15,10 @@ jobs:
         export_default_credentials: true
     - name: Start GCloud Instance
       run: |
-        pwd
-        ls
         gcloud compute instances create example-nested-vm --zone us-east1-b \
                 --machine-type=n2-highcpu-4 \
                 --image cos-85-13310-1041-28 --image-project cos-cloud \
-                --metadata-from-file user-data=cloud-config.config
+                --metadata-from-file user-data=cloud-config.yml
     - name: Wait until instance is read
       timeout-minutes: 1
       run: |

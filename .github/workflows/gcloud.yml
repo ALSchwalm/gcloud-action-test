@@ -13,4 +13,9 @@ jobs:
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
     - name: Use gcloud CLI
-      run: gcloud info
+      run: |
+        gcloud compute instances create ci-$GITHUB_RUN_ID --zone us-east1-b \
+                --min-cpu-platform "Intel Haswell" --machine-type=f1-micro \
+                --image nested-vm-image
+        gcloud ssh ci-$GITHUB_RUN_ID cat /proc/cpuinfo
+        gcloud compute instances delete ci-$GITHUB_RUN_ID

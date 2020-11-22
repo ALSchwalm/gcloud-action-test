@@ -20,7 +20,7 @@ jobs:
                 --image cos-85-13310-1041-28 --image-project cos-cloud \
                 --metadata-from-file user-data=cloud-config.yml
     - name: Wait until instance is ready
-      timeout-minutes: 1
+      timeout-minutes: 5
       run: |
         until gcloud compute ssh ci-$GITHUB_RUN_ID --quiet --zone us-east1-b --container mythril -- exit
         do

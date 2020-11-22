@@ -12,12 +12,22 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
         export_default_credentials: true
-    - name: Use gcloud CLI
+    - name: Start GCloud Instance
       run: |
-        gcloud compute instances create ci-$GITHUB_RUN_ID --zone us-east1-b \
-                --min-cpu-platform "Intel Haswell" --machine-type=f1-micro \
-                --image nested-vm-image
-        gcloud compute ssh ci-$GITHUB_RUN_ID --quiet --zone us-east1-b -- exit 1
+        gcloud compute instances create example-nested-vm --zone us-east1-b \
+                --machine-type=n2-highcpu-4 \
+                --image cos-85-13310-1041-28 --image-project cos-cloud \
+                --metadata-from-file user-data=cloud-config.yaml
+    - name: Wait until instance is read
+      timeout-minutes: 1
+      run: |
+        until gcloud compute ssh ci-$GITHUB_RUN_ID --quiet --zone us-east1-b --container mythril -- exit
+        do
+          sleep 5
+        done
+    - name: Run tests
+      run: |
+        gcloud compute ssh ci-$GITHUB_RUN_ID --quiet --zone us-east1-b --container mythril -- ls /
     - name: Cleanup
       if: always()
       run: |

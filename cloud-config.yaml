@@ -1,0 +1,19 @@
+#cloud-config
+
+write_files:
+- path: /etc/systemd/system/mythril.service
+  permissions: 0644
+  owner: root
+  content: |
+    [Unit]
+    Description=Automatically start the mythril docker container
+
+    [Service]
+    ExecStart=/usr/bin/docker run --rm --name mythril adamschwalm/hypervisor-build:12 sleep 900
+    ExecStop=/usr/bin/docker stop mythril
+    ExecStopPost=/usr/bin/docker rm mythril
+
+runcmd:
+- systemctl daemon-reload
+- systemctl start mythril.service
+- sleep 900 && systemctl poweroff

@@ -17,7 +17,7 @@ jobs:
         gcloud compute instances create example-nested-vm --zone us-east1-b \
                 --machine-type=n2-highcpu-4 \
                 --image cos-85-13310-1041-28 --image-project cos-cloud \
-                --metadata-from-file user-data=cloud-config.yaml
+                --metadata-from-file user-data=cloud-config.config
     - name: Wait until instance is read
       timeout-minutes: 1
       run: |

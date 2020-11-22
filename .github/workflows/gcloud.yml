@@ -22,14 +22,18 @@ jobs:
     - name: Wait until instance is ready
       timeout-minutes: 5
       run: |
-        until gcloud compute ssh ci-$GITHUB_RUN_ID --quiet --zone us-east1-b --container mythril -- exit
+        until gcloud compute ssh ci-$GITHUB_RUN_ID --quiet \
+                      --zone us-east1-b --container mythril \
+                      --command 'echo Connection established'
         do
           echo Connection failed. Waiting 5 seconds...
           sleep 5
         done
     - name: Run tests
       run: |
-        gcloud compute ssh ci-$GITHUB_RUN_ID --quiet --zone us-east1-b --container mythril -- ls /
+        gcloud compute ssh ci-$GITHUB_RUN_ID --quiet \
+                --zone us-east1-b --container mythril \
+                --command 'pacman --help'
     - name: Cleanup
       if: always()
       run: |

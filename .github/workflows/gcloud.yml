@@ -17,7 +17,7 @@ jobs:
       run: |
         gcloud compute instances create ci-$GITHUB_RUN_ID --zone us-east1-b \
                 --machine-type=n2-highcpu-4 \
-                --image cos-85-13310-1041-28 --image-project cos-cloud \
+                --image mythril-test-image \
                 --metadata-from-file user-data=cloud-config.yml
     - name: Wait until instance is ready
       timeout-minutes: 5
@@ -32,8 +32,12 @@ jobs:
     - name: Run tests
       run: |
         gcloud compute ssh ci-$GITHUB_RUN_ID --quiet \
-                --zone us-east1-b --container mythril \
-                --command 'pacman --help'
+                --zone us-east1-b --container mythril --ssh-flag="-t" <<EOF
+          git clone https://github.com/mythril-hypervisor/mythril.git
+          cd mythril
+          make test
+          exit
+        EOF
     - name: Cleanup
       if: always()
       run: |

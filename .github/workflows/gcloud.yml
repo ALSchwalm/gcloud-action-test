@@ -17,7 +17,7 @@ jobs:
       run: |
         gcloud compute instances create ci-$GITHUB_RUN_ID --zone us-east1-b \
                 --machine-type=n2-highcpu-4 \
-                --image mythril-test-image \
+                --image mythril-test-image-2 \
                 --metadata-from-file user-data=cloud-config.yml
     - name: Wait until instance is ready
       timeout-minutes: 5
@@ -33,8 +33,12 @@ jobs:
       run: |
         gcloud compute ssh ci-$GITHUB_RUN_ID --quiet \
                 --zone us-east1-b --container mythril --ssh-flag="-t" <<EOF
-          git clone --depth 1 https://github.com/mythril-hypervisor/mythril.git
+          mkdir mythril
           cd mythril
+          git init
+          git remote add origin https://github.com/mythril-hypervisor/mythril.git
+          git fetch --depth 1 origin f173342a8d8bdffa63e813b87853b8724faad441
+          git reset --hard FETCH_HEAD
           git submodule init
           git submodule update --depth 1
           make test
